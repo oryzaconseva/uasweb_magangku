@@ -17,6 +17,9 @@ class Mahasiswa extends Model
     /**
      * Menentukan kolom mana saja yang boleh diisi.
      */
+    // app/Models/Mahasiswa.php
+
+// ...
     protected $fillable = [
         'user_id',
         'nama_lengkap',
@@ -26,7 +29,9 @@ class Mahasiswa extends Model
         'angkatan',
         'no_telp',
         'cv_path',
-    ];
+        'alamat', // <-- TAMBAHKAN BARIS INI
+];
+// ...
 
     /**
      * Mendefinisikan relasi "belongsTo" ke model User.

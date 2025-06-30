@@ -9,33 +9,28 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
+    // GANTI SELURUH method up() ANDA DENGAN INI
+public function up(): void
+{
+    $prefix = 'oryza_';
 
-        $prefix = 'oryza_';
+    Schema::create($prefix . 'mahasiswa', function (Blueprint $table) use ($prefix) {
+        $table->id();
+        $table->foreignId('user_id')->constrained($prefix . 'users')->onDelete('cascade');
 
-        Schema::create($prefix . 'mahasiswa', function (Blueprint $table) use ($prefix) {
-            $table->id();
-            // Relasi ke tabel users yang sudah diberi prefix
-            // onDelete('cascade') berarti jika user dihapus, data mahasiswa terkait juga akan ikut terhapus.
-            $table->foreignId('user_id')->constrained($prefix . 'users')->onDelete('cascade');
+        // Kolom-kolom profil mahasiswa (semua wajib diisi)
+        $table->string('nama_lengkap');
+        $table->string('nim')->unique();
+        $table->string('universitas');
+        $table->string('jurusan');
+        $table->year('angkatan');
+        $table->string('no_telp');
+        $table->text('alamat');
+        $table->string('cv_path');
 
-            // Kolom-kolom yang diperlukan untuk profil mahasiswa
-            $table->string('nama_lengkap');
-            $table->string('nim')->unique();
-            $table->string('universitas');
-            $table->string('jurusan');
-            $table->year('angkatan')->nullable();
-            $table->string('no_telp')->nullable();
-            $table->string('cv_path')->nullable(); // Path ke file CV utama di profil
-
-            // Tambahkan kolom lain jika ada, misal:
-            // $table->text('alamat')->nullable();
-            // $table->string('foto_profil')->nullable();
-
-            $table->timestamps();
-        });
-    }
+        $table->timestamps();
+    });
+}
 
     /**
      * Reverse the migrations.

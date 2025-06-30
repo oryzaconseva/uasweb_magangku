@@ -35,6 +35,10 @@
 
                         <h5 class="mb-3">Informasi Kontak & Dokumen</h5>
                         <div class="row g-3">
+                            <div class="col-12 form-group">
+                                <label for="universitas" class="form-label">Nama Universitas <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="universitas" value="{{ old('universitas') }}" required>
+                            </div>
                             <div class="col-md-6 form-group">
                                 <label for="no_hp" class="form-label">Nomor Handphone <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" name="no_hp" value="{{ old('no_hp') }}" required>

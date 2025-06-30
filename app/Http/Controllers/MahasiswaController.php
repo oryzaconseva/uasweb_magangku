@@ -60,46 +60,40 @@ class MahasiswaController extends Controller
     public function createProfile() { if (Auth::user()->mahasiswa) { return redirect()->route('mahasiswa.edit.profile'); } return view('mahasiswa.profile.create'); }
    // Ganti seluruh method storeProfile() yang lama dengan ini:
 
+    // Ganti seluruh method storeProfile Anda dengan kode ini
+
     public function storeProfile(Request $request)
-{
-        // 1. Sesuaikan aturan validasi agar cocok dengan nama input di FORM
-    $request->validate([
-        // 'nama_lengkap' tidak perlu divalidasi dari form, karena kita ambil dari user yang login
+    {
+    // 1. Pastikan 'universitas' ada di dalam validasi
+        $request->validate([
+        'universitas'   => 'required|string|max:255',
         'nim'           => 'required|string|max:20|unique:oryza_mahasiswa,nim',
-        'prodi'         => 'required|string|max:255', // diubah dari universitas & jurusan
-        'tahun_masuk'   => 'required|digits:4|integer|min:1990', // diubah dari angkatan
-        'no_hp'         => 'required|string|max:15', // diubah dari no_telp
-        'alamat'        => 'required|string', // ditambahkan validasi untuk alamat
+        'prodi'         => 'required|string|max:255',
+        'tahun_masuk'   => 'required|digits:4|integer|min:1990',
+        'no_hp'         => 'required|string|max:15',
+        'alamat'        => 'required|string',
         'cv'            => 'required|file|mimes:pdf|max:2048',
-        // Kita bisa tambahkan field 'universitas' jika memang diperlukan
-        // 'universitas' => 'required|string|max:255',
-    ]);
+        ]);
 
-    $user = Auth::user();
+        $user = Auth::user();
+        $cvPath = $request->file('cv')->store('cvs', 'public');
 
-    // 2. Simpan file CV terlebih dahulu
-    $cvPath = $request->file('cv')->store('cvs', 'public');
-
-    // 3. Buat data Mahasiswa, sesuaikan field dengan Model & Form
-    Mahasiswa::create([
+    // 2. Pastikan 'universitas' ada di dalam data yang disimpan
+        Mahasiswa::create([
         'user_id'       => $user->id,
-        'nama_lengkap'  => $user->name, // Ambil nama langsung dari user yang login, lebih aman
+        'nama_lengkap'  => $user->name,
+        'universitas'   => $request->universitas, // <-- Ini akan mengambil data dari input form
         'nim'           => $request->nim,
-        'jurusan'       => $request->prodi, // 'prodi' dari form disimpan ke kolom 'jurusan'
-        'angkatan'      => $request->tahun_masuk, // 'tahun_masuk' dari form disimpan ke 'angkatan'
-        'no_telp'       => $request->no_hp, // 'no_hp' dari form disimpan ke 'no_telp'
-        'alamat'        => $request->alamat, // 'alamat' dari form disimpan
+        'jurusan'       => $request->prodi,
+        'angkatan'      => $request->tahun_masuk,
+        'no_telp'       => $request->no_hp,
+        'alamat'        => $request->alamat,
         'cv_path'       => $cvPath,
-        // Jika kamu punya kolom 'universitas', isi di sini
-        // 'universitas'   => $request->universitas,
     ]);
-
-    // 4. Update nama user jika diperlukan (opsional, karena seharusnya sudah sama saat registrasi)
-    // Jika nama di profil bisa berbeda dari nama user, baris ini boleh diaktifkan.
-    // $user->update(['name' => $request->nama_lengkap]);
+    Auth::user()->load('mahasiswa');
 
     return redirect()->route('mahasiswa.dashboard')->with('success', 'Profil berhasil dibuat! Selamat datang.');
-}
+    }
     public function editProfile() { $mahasiswa = Auth::user()->mahasiswa; return view('mahasiswa.profile.edit', compact('mahasiswa')); }
 
     /**
